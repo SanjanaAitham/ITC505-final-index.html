@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Briem+Hand:wght@100..900&display=swap" rel="stylesheet">
+    <title>Lights Out Game - 5x5</title>
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #1e1e1e, #2d2d2d);
+            color: #f1f1f1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            font-family: 'Briem Hand', sans-serif;
+            font-size: 60px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: linear-gradient(to right, #ff9a9e, #fad0c4, #fbc2eb);
+            color: #fff;
+            z-index: 2;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            border-bottom: 4px solid #333;
+            margin: 0;
+        }
+
+        /* Rules Section */
+        #rules {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin-top: 120px;
+            border: 2px solid #fff;
+            border-radius: 15px;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.6);
+            max-width: 600px;
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        /* Game Grid */
+        #container {
+            display: grid;
+            grid-template-columns: repeat(5, 70px);
+            grid-template-rows: repeat(5, 70px);
+            gap: 10px;
+            margin-top: 30px;
+            background: #555;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.7);
+        }
+        .cell {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, #333, #666);
+            border: 2px solid #222;
+            border-radius: 10px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .cell.toggled {
+            background: radial-gradient(circle, #ffcc00, #ff9900);
+            transform: scale(1.1);
+        }
+        .cell:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            color: #333;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+        }
+        button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(to right, #fbc2eb, #ff9a9e);
+        }
+
+        /* Popup Styles */
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.8);
+            display: none;
+            text-align: center;
+        }
+        #popup button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Addendum Section */
+        #addendum {
+            display: none;
+            background: #333;
+            color: #fff;
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.8);
+            text-align: justify;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        #addendum ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        #addendum li {
+            margin: 10px 0;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 30px;
+            font-size: 16px;
+            color: #aaa;
+        }
+        footer span {
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>LIGHTS OUT</h1>
+    <div id="rules">
+        <p><b>Game Rules:</b> Click on any cell to toggle its state and its neighbors'. The goal is to turn all the lights on or off. Good luck!</p>
+    </div>
+    <div id="container"></div>
+    <div>
+        <button onclick="resetBoard()">Reset</button>
+        <button onclick="toggleAddendum()">View Addendum</button>
+    </div>
+    <div id="popup">
+        <p>Congratulations! You won the game!</p>
+        <button onclick="closePopup()">Close</button>
+    </div>
+    <div id="addendum">
+        <p>The <i>Lights Out</i> game challenges players to use logic and achieve a harmonious grid. This project refined my JavaScript skills and UX design principles.</p>
+        <ul>
+            <li><b>Logical Complexity:</b> Determining the correct sequence of moves.</li>
+            <li><b>Game Solvability:</b> Ensuring solvable initial states.</li>
+            <li><b>User Engagement:</b> Balancing difficulty to retain players.</li>
+            <li><b>Dynamic Interactions:</b> Managing grid toggles precisely.</li>
+            <li><b>Visual Design:</b> Crafting an intuitive and visually pleasing interface.</li>
+        </ul>
+        <p>This project was a rewarding experience in logic and interactivity, enhancing both coding skills and user-centric design understanding.</p>
+
+        <h3>CSS Used in This Project:</h3>
+        <pre><code>
+/* Global Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #1e1e1e, #2d2d2d);
+    color: #f1f1f1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+/* Rest of the CSS here */
+        </code></pre>
+    </div>
+    <footer>
+        <p>Last updated: <span id="lastModified"></span></p>
+    </footer>
+    <script>
+        // Same script logic as before
+        const size = 5;
+        let cells = [];
+        function createBoard() {
+            const container = document.getElementById("container");
+            container.innerHTML = "";
+            cells = [];
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.onclick = function () { toggleCell(row, col); };
+                    container.appendChild(cell);
+                    cells.push(cell);
+                }
+            }
+            setInitialState();
+        }
+        function resetBoard() {
+            cells.forEach(cell => cell.classList.remove("toggled"));
+            setInitialState();
+            closePopup();
+        }
+        function setInitialState() {
+            for (let i = 0; i < size * size / 4; i++) {
+                const randomIndex = Math.floor(Math.random() * cells.length);
+                cells[randomIndex].classList.toggle("toggled");
+            }
+        }
+        function toggleCell(row, col) {
+            const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+            cells[row * size + col].classList.toggle("toggled");
+            directions.forEach(([dr, dc]) => {
+                const nr = row + dr;
+                const nc = col + dc;
+                if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+                    cells[nr * size + nc].classList.toggle("toggled");
+                }
+            });
+            checkWin();
+        }
+        function checkWin() {
+            const isWinOn = cells.every(cell => cell.classList.contains("toggled"));
+            const isWinOff = cells.every(cell => !cell.classList.contains("toggled"));
+            if (isWinOn || isWinOff) {
+                document.getElementById("popup").style.display = "block";
+            }
+        }
+        function toggleAddendum() {
+            const addendum = document.getElementById("addendum");
+            addendum.style.display = addendum.style.display === "none" ? "block" : "none";
+        }
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+        document.getElementById("lastModified").textContent = document.lastModified;
+        createBoard();
+    </script>
+</body>
+</html>
+
